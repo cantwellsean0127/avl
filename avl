@@ -75,15 +75,20 @@ for file in args.files:
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         duration = float(result.stdout.strip())
         total_duration += duration
-        durations.append((file, duration))
+        hours = int(duration // 3600)
+        minutes = int((duration % 3600) // 60)
+        seconds = int(duration % 60)
+        durations.append((file, f"{hours:02}:{minutes:02}:{seconds:02}"))
     except:
         print(f"Error getting duration for {file}")
-    
     
 # Output the results for each file unless the silent flag was used
 if not args.silent:
     for file, duration in durations:
-        print(f"{file}: {duration:.2f} seconds")
+        print(f"{file}: {duration}")
 
 # Output the total length
-print(f"Total length: {total_duration:.2f} seconds")
+total_hours = int(total_duration // 3600)
+total_minutes = int((total_duration % 3600) // 60)
+total_seconds = int(total_duration % 60)
+print(f"Total length: {total_hours:02}:{total_minutes:02}:{total_seconds:02}")
