@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Verify the user has root privileges
+if [ $EUID -ne 0 ]; then
+    echo "This script must be run as root (or with sudo)."
+    exit 1
+fi
+
+# Create a symbolic link with AVL to /usr/local/bin/avl
+chmod 755 ./avl
+cp $(pwd)/avl /usr/local/bin/avl
+
+# Create a symbolic link AVL uninstaller to /usr/local/bin/avl-uninstall
+chmod 755 ./uninstall
+cp $(pwd)/uninstall /usr/local/bin/avl-uninstall
