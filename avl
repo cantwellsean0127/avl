@@ -1,0 +1,76 @@
+#!/bin/python3
+
+# Imports
+import os
+import subprocess
+import argparse
+
+# Parse command arguments
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('-h', '--help', action='store_true', help="Show help message")
+parser.add_argument('-v', '--video-only', action='store_true', help="Only show video files")
+parser.add_argument('-a', '--audio-only', action='store_true', help="Only show audio files")
+parser.add_argument('-s', '--silent', action='store_true', help="Only show total length")
+parser.add_argument('files', nargs='*', help="List of files to process")
+args = parser.parse_args()
+
+# Show help if requested and then exit
+if args.help:
+    print("Usage: avl [OPTIONS] <FILES...>")
+    print("")
+    print("Options:")
+    print("-h, --help        |    Show this help message")
+    print("-v, --video-only  |    Only show video files")
+    print("-a, --audio-only  |    Only show audio files")
+    print("-s, --silent      |    Only show the total length, not individual file lengths")
+    exit()
+
+# If the files argument was not passed, say so and exit
+if len(args.files) == 0:
+    print("No files specified. Please use -h or --help for help.")
+    exit(1)
+
+# Variables to keep track of the differet file durations as well as the total duration
+durations = []
+total_duration = 0
+
+# Goes through each file
+for file in args.files:
+
+    # Verifies the current file is indeed a file
+    if not os.path.isfile(file):
+        print(f"{file} is not a valid file and was skipped.")
+        continue
+    
+    # Check if the file is a video or audio file
+    is_video = file.lower().endswith(('.mp4', '.avi', '.mkv', '.mov', '.flv', '.webm'))
+    is_audio = file.lower().endswith(('.mp3', '.wav', '.aac', '.ogg', '.flac'))
+    
+    # If we are only outputting video files and the current file is not a video file, skip it
+    if args.video_only and not is_video:
+        continue
+
+    # If we are only outputting audio files and the current file is not an audio file, skip it
+    if args.audio_only and not is_audio:
+        continue
+
+    # If the file is neithre an audio nor video file, skip it
+    if not is_video and not is_audio:
+        print(f"{file} is not an audio or video file and was skipped.")
+        continue
+    
+    # Use ffprobe in order to extract the duration of the current file 
+    command = ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file]
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    duration = float(result.stdout.strip())
+    
+    total_duration += duration
+    durations.append((file, duration))
+
+# Output the results for each file unless the silent flag was used
+if not args.silent:
+    for file, duration in durations:
+        print(f"{file}: {duration:.2f} seconds")
+
+# Output the total length
+print(f"Total length: {total_duration:.2f} seconds")
