@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Verify the user has root privileges
+if [ $EUID -ne 0 ]; then
+    echo "This script must be run as root (or with sudo)."
+    exit 1
+fi
+
+# Downloads the most recent version
+wget https://github.com/cantwellsean0127/avl/archive/refs/heads/main.zip &>/dev/null
+
+# Unzips the most recent version and then removes the zip file
+unzip ./main.zip &>/dev/null
+rm -f ./main.zip
+
+# Replaces the current files with the updates files
+mv avl-main/* ./
+rmdir avl-main
+
+# Adjusts owner for the new files, by default they belong to root
+chown --recursive $SUDO_USER .
+
+# Reinstalls the AVL
+avl-uninstall
+./install
