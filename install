@@ -9,11 +9,14 @@ fi
 # Create a symbolic link with AVL to /usr/local/bin/avl
 chmod 755 ./avl
 cp $(pwd)/avl /usr/local/bin/avl
+chown $(logname) /usr/local/bin/avl
 
 # Create a symbolic link with AVL uninstaller to /usr/local/bin/avl-uninstall
 chmod 755 ./uninstall
 cp $(pwd)/uninstall /usr/local/bin/avl-uninstall
+chown $(logname) /usr/local/bin/avl-uninstall
 
 # Create a symbolic link with AVL updater to /usr/local/bin/avl-update
 chmod 755 ./update
 cp $(pwd)/update /usr/local/bin/avl-update
+chown $(logname) /usr/local/bin/avl-update

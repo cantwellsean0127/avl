@@ -14,12 +14,39 @@ unzip ./main.zip &>/dev/null
 rm -f ./main.zip
 
 # Replaces the current files with the updates files
-mv avl-main/* ./
-rmdir avl-main
+#mv avl-main/* ./
+rm -rf avl-main
 
 # Adjusts owner for the new files, by default they belong to root
-chown --recursive $SUDO_USER .
+chown --recursive $(logname) .
 
-# Reinstalls the AVL
+# Gets the current owner of the AVL files
+AVL_OWNER=$(stat -c "%U" /usr/local/bin/avl)
+AVL_UNINSTALL_OWNER=$(stat -c "%U" /usr/local/bin/avl-uninstall)
+AVL_UPDATE_OWNER=$(stat -c "%U" /usr/local/bin/avl-update)
+
+# Gets the current grpup of the AVL files
+AVL_GROUP=$(stat -c "%G" /usr/local/bin/avl)
+AVL_UNINSTALL_GROUP=$(stat -c "%G" /usr/local/bin/avl-uninstall)
+AVL_UPDATE_GROUP=$(stat -c "%G" /usr/local/bin/avl-update)
+
+# Gets the current permissions of the AVL files
+AVL_PERMISSIONS=$(stat --format=%a /usr/local/bin/avl)
+AVL_UNINSTALL_PERMISSIONS=$(stat --format=%a /usr/local/bin/avl-uninstall)
+AVL_UPDATE_PERMISSIONS=$(stat --format=%a /usr/local/bin/avl-update)
+
+# Uninstalls the current version of AVL
 avl-uninstall
+
+# Installs the newest version of AVL
 ./install
+
+# Changes the owner:group to what they were before the update
+chown $AVL_OWNER:$AVL_GROUP /usr/local/bin/avl
+chown $AVL_UNINSTALL_OWNER:$AVL_UNINSTALL_GROUP /usr/local/bin/avl-uninstall
+chown $AVL_UPDATE_OWNER:$AVL_UPDATE_GROUP /usr/local/bin/avl-update
+
+# Changes the permissions to what they were before the update
+chmod $AVL_PERMISSIONS /usr/local/bin/avl
+chmod $AVL_UNINSTALL_PERMISSIONS /usr/local/bin/avl-uninstall
+chmod $AVL_UPDATE_PERMISSIONS /usr/local/bin/avl-update
