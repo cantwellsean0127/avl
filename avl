@@ -70,13 +70,16 @@ for file in args.files:
         continue
     
     # Use ffprobe in order to extract the duration of the current file 
-    command = ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file]
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    duration = float(result.stdout.strip())
+    try:
+        command = ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file]
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        duration = float(result.stdout.strip())
+        total_duration += duration
+        durations.append((file, duration))
+    except:
+        print(f"Error getting duration for {file}")
     
-    total_duration += duration
-    durations.append((file, duration))
-
+    
 # Output the results for each file unless the silent flag was used
 if not args.silent:
     for file, duration in durations:
