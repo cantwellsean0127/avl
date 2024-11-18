@@ -30,7 +30,7 @@ if len(args.files) == 0:
     print("No files specified. Please use -h or --help for help.")
     exit(1)
 
-# Variables to keep track of the differet file durations as well as the total duration
+# Variables to keep track of the different file durations as well as the total duration
 durations = []
 total_duration = 0
 
