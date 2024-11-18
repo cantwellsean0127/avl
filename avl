@@ -5,6 +5,16 @@ import os
 import subprocess
 import argparse
 
+# Make sure all required binaries are installed
+required_binaries = [["ffprobe","ffmpeg"]]
+for required_binary in required_binaries:
+    try:
+        command = ["which", required_binary[0]]
+        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError:
+        print("Missing required binary", required_binary[0], "from package", required_binary[1])
+        exit(1)
+
 # Parse command arguments
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('-h', '--help', action='store_true', help="Show help message")
